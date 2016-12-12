@@ -1,0 +1,37 @@
+a =>
+	FILTER: * f2:c
+
+qneg =>
+    FILTER: -k
+
+qneg2 =>
+    FILTER: qneg -k
+
+qnegraw =>
+    FILTER: * -f1:k
+
+qnegraw2 =>
+    FILTER: * -f1:k f2:qnegraw
+
+m => 
+	DOWN(200000): d
+
+qup =>
+	UP(100): u100
+
+t1 t2 =>
+	DELETE: t2
+	
+p* =>
+	SYNONYM: p $1
+	
+d1 =>
+	DECORATE: deco 1
+	
+d2 =>
+	DECORATE: deco 2
+
+
+	
+	
+
