@@ -1,25 +1,40 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.querqy</groupId>
-        <artifactId>querqy-for-lucene</artifactId>
-        <version>5.10.lucene980.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-
+    <groupId>org.querqy</groupId>
     <artifactId>querqy-solr</artifactId>
+    <version>5.10.lucene980.0-SNAPSHOT</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Querqy library for query rewriting for Solr</description>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>11</java.version>
+
+        <maven-download-plugin.version>1.13.0</maven-download-plugin.version>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
+        <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
+
+        <querqy-lucene.version>5.9.lucene980.0</querqy-lucene.version>
+
+        <commons.io.version>2.15.1</commons.io.version>
         <minidev.json-smart.version>2.5.2</minidev.json-smart.version>
         <log4j.version>2.21.1</log4j.version>
         <slf4j.version>2.0.13</slf4j.version>
         <solr.version>9.8.0</solr.version>
         <testcontainers.version>1.20.5</testcontainers.version>
-        <maven-download-plugin.version>1.13.0</maven-download-plugin.version>
+        <junit.version>4.13.2</junit.version>
+        <hamcrest.version>3.0</hamcrest.version>
+        <mockito.version>5.15.2</mockito.version>
+        <assertj-core.version>3.27.3</assertj-core.version>
+        <skipITs>true</skipITs>
     </properties>
 
     <dependencies>
@@ -44,7 +59,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>querqy-lucene</artifactId>
-            <version>${project.version}</version>
+            <version>${querqy-lucene.version}</version>
             <exclusions>
                 <!--
                     This is provided by Solr - we don't want to package it
@@ -120,6 +135,38 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>${hamcrest.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj-core.version}</version>
+            <scope>test</scope>
+        </dependency>
 
         <!-- testcontainers integration tests -->
         <dependency>
@@ -218,5 +265,37 @@
             </plugin>
 
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <release>${java.version}</release>
+                        <showDeprecation>true</showDeprecation>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>cobertura-maven-plugin</artifactId>
+                    <version>${cobertura-maven-plugin.version}</version>
+                    <configuration>
+                        <instrumentation>
+                            <excludes>
+                                <exclude>**/*Test.class</exclude>
+                            </excludes>
+                        </instrumentation>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>
