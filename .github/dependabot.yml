@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/querqy-solr"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "solr*"
+      - dependency-name: "lucene*"
+    open-pull-requests-limit: 20
