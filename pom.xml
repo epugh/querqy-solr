@@ -8,6 +8,44 @@
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Querqy library for query rewriting for Solr</description>
 
+    <url>https://querqy.org</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>renekrie</id>
+            <name>René Kriegler</name>
+            <email>post@rene-kriegler.com</email>
+            <url>https://github.com/renekrie</url>
+        </developer>
+        <developer>
+            <id>mkr</id>
+            <name>Matthias Krüger</name>
+            <url>https://github.com/mkr</url>
+        </developer>
+        <developer>
+            <id>JohannesDaniel</id>
+            <name>Johannes Peter</name>
+            <email>johannesdaniel.peter@gmx.de</email>
+            <url>https://github.com/JohannesDaniel</url>
+        </developer>
+    </developers>
+
+
+    <scm>
+        <url>git@github.com:querqy/querqy-solr.git</url>
+        <connection>scm:git:git@github.com:querqy/querqy-solr.git</connection>
+        <developerConnection>scm:git:git@github.com:querqy/querqy-solr.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
