@@ -1,7 +1,5 @@
 package querqy.solr;
 
-import org.apache.lucene.tests.util.LuceneTestCase;
-import org.apache.solr.SolrJettyTestBase;
 import org.apache.solr.SolrTestCaseJ4;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.apache.HttpSolrClient;
@@ -14,7 +12,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import querqy.model.convert.converter.MapConverterConfig;
 import querqy.model.convert.builder.BooleanQueryBuilder;
@@ -51,7 +48,7 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
 
     private static Path HOME;
 
-    //@BeforeClass
+    @BeforeClass
     public static void beforeTests() throws Exception {
 
         HOME = Files.createTempDirectory(getSimpleClassName());
@@ -76,17 +73,12 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
                 HOME.resolve("collection1").resolve("core.properties")
         );
 
-        solrRule.startSolr(LuceneTestCase.createTempDir());
-        solrRule.newCollection().withConfigSet(HOME.toString());
-
-
-        //initCore("solrconfig.xml", "schema.xml", HOME.toString());
-        //createAndStartJetty(HOME.toString());
+        solrRule.startSolr(HOME);
 
         addDocs();
     }
 
-    //@AfterClass
+    @AfterClass
     public static void cleanUp() throws IOException {
         Files.walkFileTree(HOME, new FileVisitor<Path>() {
             @Override
@@ -128,7 +120,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
         solrClient.commit("collection1");
 
     }
-    @Ignore
     @Test
     public void testThatNoExceptionIsThrownIfQueryParserIsProperlySetInRequestParameters() {
         final ModifiableSolrParams params = new ModifiableSolrParams();
@@ -142,7 +133,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
                         .process(solrRule.getSolrClient()))
                 .doesNotThrowAnyException();
     }
-    @Ignore
     @Test
     public void testThatNoExceptionIsThrownIfQueryParserIsSetProperlyInSolrConfigParameters() {
         final ModifiableSolrParams params = new ModifiableSolrParams();
@@ -156,7 +146,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
                         .process(solrRule.getSolrClient()))
                 .doesNotThrowAnyException();
     }
-    @Ignore
     @Test
     public void testMatchingOfSimpleQueryIfDefTypeIsCorrectlyDefined() throws IOException, SolrServerException {
         ExpandedQueryBuilder expanded = expanded(bq("tv"));
@@ -170,7 +159,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
 
         Assertions.assertThat(response.getResults()).hasSize(4);
     }
-    @Ignore
     @Test
     public void testQueryRewritingHandler() throws IOException, SolrServerException {
         final ExpandedQueryBuilder expanded = QueryRewritingHandler.builder()
@@ -185,7 +173,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
 
         Assertions.assertThat(response.getResults()).hasSize(6);
     }
-    @Ignore
     @Test
     public void testScoringOfFieldWeightsWithDownBoost() throws IOException, SolrServerException {
         ExpandedQueryBuilder expanded = expanded(
@@ -210,7 +197,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
                 doc("2", 45.0f)
         );
     }
-    @Ignore
     @Test
     public void testScoringOfFieldWeightsWithRawQueryUpBoost() throws IOException, SolrServerException {
         ExpandedQueryBuilder expanded = expanded(
@@ -229,7 +215,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
 
         Assertions.assertThat((Float) results.get(0).get("score")).isEqualTo(110.0f);
     }
-    @Ignore
     @Test
     public void testScoringOfFieldWeightsWithSimpleBoost() throws IOException, SolrServerException {
         ExpandedQueryBuilder expanded = expanded(
@@ -248,7 +233,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
 
         Assertions.assertThat((Float) results.get(0).get("score")).isGreaterThan(10.0f);
     }
-    @Ignore
     @Test
     public void testScoringOfFieldWeights() throws IOException, SolrServerException {
         ExpandedQueryBuilder expanded = expanded(bq(dmq("tv", "television")));
@@ -266,7 +250,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
                 doc("0", 40.0f), doc("21", 10.0f)
         );
     }
-    @Ignore
     @Test
     public void testMatchAllQuery() throws IOException, SolrServerException {
         ExpandedQueryBuilder expanded = expanded(matchall());
@@ -279,7 +262,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
 
         Assertions.assertThat(response.getResults()).hasSize(6);
     }
-    @Ignore
     @Test
     public void testMatchingOfSimpleQuery() throws IOException, SolrServerException {
         ExpandedQueryBuilder expanded = expanded(bq("tv"));
@@ -292,7 +274,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
 
         Assertions.assertThat(response.getResults()).hasSize(4);
     }
-    @Ignore
     @Test
     public void testMatchingOfSimpleQueryWithQuerqyFilter() throws IOException, SolrServerException {
         ExpandedQueryBuilder expanded = expanded(bq("tv"), bq("television"));
@@ -305,7 +286,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
 
         Assertions.assertThat(response.getResults()).hasSize(2);
     }
-    @Ignore
     @Test
     public void testMatchingOfSimpleQueryWithSolrFilter() throws IOException, SolrServerException {
         ExpandedQueryBuilder expanded = expanded(bq("tv"));
@@ -320,7 +300,6 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
         Assertions.assertThat(response.getResults()).hasSize(2);
     }
 
-    @Ignore
     @Test
     public void testMatchingOfNestedQuery() throws IOException, SolrServerException {
         BooleanQueryBuilder query = bq(
