@@ -51,7 +51,7 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
     @BeforeClass
     public static void beforeTests() throws Exception {
 
-        HOME = Files.createTempDirectory(getSimpleClassName());
+        HOME = createTempDir();
         final File collDir = new File(HOME.toFile(), "collection1");
         if (!collDir.mkdir()) {
             throw new IOException("Could not create collection dir");
