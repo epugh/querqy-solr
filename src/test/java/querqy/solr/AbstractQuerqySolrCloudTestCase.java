@@ -7,6 +7,7 @@ import org.apache.solr.client.solrj.SolrResponse;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.cloud.AbstractFullDistribZkTestBase;
 import org.apache.solr.cloud.SolrCloudTestCase;
 import org.apache.solr.common.params.SolrParams;
 import org.slf4j.Logger;
@@ -33,9 +34,13 @@ public class AbstractQuerqySolrCloudTestCase extends SolrCloudTestCase {
 
     public static void waitForRecoveriesToFinish(final CloudSolrClient client) throws Exception {
         assert null != client.getDefaultCollection();
-        waitForState("Waiting for recoveries to finish", client.getDefaultCollection(), 330, TimeUnit.SECONDS,
-                (liveNodes, collection) -> collection != null &&
-                        replicasForCollectionAreFullyActive(liveNodes, collection, -1, -1));
+        AbstractFullDistribZkTestBase.waitForRecoveriesToFinish(
+                client.getDefaultCollection(),
+                cluster.getZkStateReader(),
+                false,
+                true,
+                330,
+                TimeUnit.SECONDS);
     }
 
     protected QueryResponse waitForRewriterAndQuery(final SolrParams params, final SolrClient client) throws Exception {
