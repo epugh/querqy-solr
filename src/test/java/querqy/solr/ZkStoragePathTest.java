@@ -7,7 +7,7 @@ import static querqy.solr.ZkRewriterContainer.IO_PATH;
 import org.apache.solr.SolrTestCaseJ4;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.apache.HttpSolrClient;
 import org.apache.solr.client.solrj.request.CollectionAdminRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.cloud.SolrZkClient;
@@ -42,15 +42,14 @@ public class ZkStoragePathTest extends AbstractQuerqySolrCloudTestCase {
     public static void setupCluster() throws Exception {
 
         configureCluster(2)
-                .addConfig("storagepath", getFile("solrcloud").toPath().resolve("configsets").resolve("storagepath")
+                .addConfig("storagepath", getFile("solrcloud").resolve("configsets").resolve("storagepath")
                         .resolve("conf"))
                 .configure();
 
         CollectionAdminRequest.createCollection(COLLECTION, "storagepath", 2, 1).process(cluster.getSolrClient());
         cluster.waitForActiveCollection(COLLECTION, 2, 2);
 
-        CLOUD_CLIENT = cluster.getSolrClient();
-        CLOUD_CLIENT.setDefaultCollection(COLLECTION);
+        CLOUD_CLIENT = cluster.getSolrClient(COLLECTION);
 
         waitForRecoveriesToFinish(CLOUD_CLIENT);
 
@@ -121,7 +120,7 @@ public class ZkStoragePathTest extends AbstractQuerqySolrCloudTestCase {
         assertNotNull(rsp);
         assertEquals(1L, rsp.getResults().getNumFound());
 
-        final List<String> children = ZK_CLIENT.getChildren("/configs/" + configuredConfigName + "/" + IO_PATH + "/" + IO_DATA, null, true)
+        final List<String> children = ZK_CLIENT.getChildren("/configs/" + configuredConfigName + "/" + IO_PATH + "/" + IO_DATA, (org.apache.zookeeper.Watcher) null)
                 .stream().filter(name -> name.contains("some_common_rules-")).collect(Collectors.toList());
         assertTrue(children.size() >= 1);
     }

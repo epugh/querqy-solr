@@ -4,7 +4,7 @@ import org.apache.lucene.tests.util.LuceneTestCase;
 import org.apache.solr.SolrJettyTestBase;
 import org.apache.solr.SolrTestCaseJ4;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.apache.HttpSolrClient;
 import org.apache.solr.client.solrj.request.json.JsonQueryRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
@@ -59,20 +59,20 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
         if (!collDir.mkdir()) {
             throw new IOException("Could not create collection dir");
         }
-        Files.copy(getFile("solr/solr.xml").toPath(), HOME.resolve("solr.xml"));
+        Files.copy(getFile("solr/solr.xml"), HOME.resolve("solr.xml"));
         final File confDir = new File(collDir, "conf");
         if (!confDir.mkdir()) {
             throw new IOException("Could not create conf dir");
         }
 
-        Files.copy(getFile("solr/collection1/conf/solrconfig-external-rewriting.xml").toPath(),
+        Files.copy(getFile("solr/collection1/conf/solrconfig-external-rewriting.xml"),
                 HOME.resolve("collection1").resolve("conf").resolve("solrconfig.xml")
                 );
-        Files.copy(getFile("solr/collection1/conf/schema.xml").toPath(),
+        Files.copy(getFile("solr/collection1/conf/schema.xml"),
                 HOME.resolve("collection1").resolve("conf").resolve("schema.xml")
         );
 
-        Files.copy(getFile("solr/collection1/core.properties").toPath(),
+        Files.copy(getFile("solr/collection1/core.properties"),
                 HOME.resolve("collection1").resolve("core.properties")
         );
 

@@ -3,7 +3,7 @@
 
     <groupId>org.querqy</groupId>
     <artifactId>querqy-solr</artifactId>
-    <version>5.10.lucene980.0-SNAPSHOT</version>
+    <version>5.10.lucene1021.0-SNAPSHOT</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Querqy library for query rewriting for Solr</description>
@@ -48,7 +48,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>11</java.version>
+        <java.version>21</java.version>
 
         <maven-download-plugin.version>1.13.0</maven-download-plugin.version>
         <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
@@ -60,13 +60,14 @@
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
 
-        <querqy-lucene.version>5.9.lucene980.0</querqy-lucene.version>
+        <querqy-lucene.version>5.9.lucene1021.0</querqy-lucene.version>
+        <lucene.version>10.3.2</lucene.version>
 
         <commons.io.version>2.15.1</commons.io.version>
         <minidev.json-smart.version>2.5.2</minidev.json-smart.version>
         <log4j.version>2.21.1</log4j.version>
         <slf4j.version>2.0.13</slf4j.version>
-        <solr.version>9.8.0</solr.version>
+        <solr.version>10.0.0</solr.version>
         <testcontainers.version>1.20.5</testcontainers.version>
         <junit.version>4.13.2</junit.version>
         <hamcrest.version>3.0</hamcrest.version>
@@ -75,7 +76,92 @@
         <skipITs>true</skipITs>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <!--
+                solr-core:10.0.0 POM has Jackson dependencies listed without versions.
+                The versions are supposed to come from jackson-bom, so we import it here
+                to fix transitive dependency resolution.
+            -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>2.20.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
+        <!--
+            Explicitly declare Lucene and Solr SolrJ as provided dependencies because
+            solr-core:10.0.0 has an invalid POM (missing Jackson versions) and Maven
+            therefore does not resolve its transitive dependencies automatically.
+            These are all provided by the Solr runtime.
+        -->
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>${lucene.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analysis-common</artifactId>
+            <version>${lucene.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queries</artifactId>
+            <version>${lucene.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+            <version>${solr.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj-zookeeper</artifactId>
+            <version>${solr.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.4.8-jre</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.20.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+            <version>1.56.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.20.0</version>
+            <scope>provided</scope>
+        </dependency>
         <!--
             The Solr test framework needs to be loaded before Lucene core,
             otherwise we run into trouble loading the codec for testing
@@ -289,7 +375,7 @@
                         <project.build.directory>${project.build.directory}</project.build.directory>
                         <project.build.finalName>${project.build.finalName}</project.build.finalName>
                         <project.version>${project.version}</project.version>
-                        <solr.test.versions>solr:9.8,solr:9.7,solr:9.6,solr:9.5,solr:9.4,solr:9.3,solr:9.2,solr:9.1</solr.test.versions>
+                        <solr.test.versions>solr:10.0,solr:9.8,solr:9.7,solr:9.6,solr:9.5,solr:9.4,solr:9.3,solr:9.2,solr:9.1</solr.test.versions>
                     </systemPropertyVariables>
                 </configuration>
                 <executions>

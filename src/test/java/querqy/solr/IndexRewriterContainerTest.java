@@ -4,9 +4,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.file.PathUtils;
 import org.apache.solr.SolrTestCase;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.Http2SolrClient;
+import org.apache.solr.client.solrj.jetty.HttpJettySolrClient;
 import org.apache.solr.client.solrj.request.ContentStreamUpdateRequest;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -448,8 +448,8 @@ public class IndexRewriterContainerTest extends SolrTestCase {
         deleteRequest.process(client, collection);
     }
 
-    public static Http2SolrClient createNewSolrClient(String baseUrl, String collectionOrCore) {
-        return new Http2SolrClient.Builder(baseUrl)
+    public static HttpJettySolrClient createNewSolrClient(String baseUrl, String collectionOrCore) {
+        return new HttpJettySolrClient.Builder(baseUrl)
                 .withDefaultCollection(collectionOrCore)
                 .withConnectionTimeout(15000, TimeUnit.MILLISECONDS)
                 .withIdleTimeout(90000, TimeUnit.MILLISECONDS)

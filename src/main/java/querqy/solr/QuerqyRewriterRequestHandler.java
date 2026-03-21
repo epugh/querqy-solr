@@ -38,7 +38,7 @@ public class QuerqyRewriterRequestHandler implements SolrRequestHandler, NestedR
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
-    public void initializeMetrics(final SolrMetricsContext parentContext, final String scope) {
+    public void initializeMetrics(final SolrMetricsContext parentContext, final io.opentelemetry.api.common.Attributes attributes) {
     }
 
     @Override
@@ -369,7 +369,7 @@ public class QuerqyRewriterRequestHandler implements SolrRequestHandler, NestedR
 
         return new SolrRequestHandler() {
             @Override
-            public void initializeMetrics(final SolrMetricsContext parentContext, final String scope) {
+            public void initializeMetrics(final SolrMetricsContext parentContext, final io.opentelemetry.api.common.Attributes attributes) {
 
             }
 

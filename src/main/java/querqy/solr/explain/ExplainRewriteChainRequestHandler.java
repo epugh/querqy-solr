@@ -149,7 +149,7 @@ public class ExplainRewriteChainRequestHandler implements SolrRequestHandler {
     }
 
     @Override
-    public void initializeMetrics(final SolrMetricsContext parentContext, final String scope) {
+    public void initializeMetrics(final SolrMetricsContext parentContext, final io.opentelemetry.api.common.Attributes attributes) {
     }
 
     @Override
