@@ -9,7 +9,6 @@ import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.request.SolrQueryRequest;
 import org.apache.solr.search.QueryParsing;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 @SolrTestCaseJ4.SuppressSSL
@@ -24,15 +23,18 @@ public class SolrTermQueryCachePreloadTest extends SolrTestCaseJ4 {
         // for the firstSearcher event in testThatCacheIsAvailableAndPrefilledNotUpdatedByQueryAndUpdatedByRewriter()
         h.close();
         initCore("solrconfig.xml", "schema.xml", getFile("cache-preload-test/collection1").getParent());
+
+        // The newSearcher listener (which preloads both f1 and f2) only fires when a commit
+        // actually opens a new searcher. Index a doc so the commit is non-empty and a new
+        // searcher gets opened. Without this, only the firstSearcher listener (f1 only) runs
+        // and the test's f2-related assertions can't be satisfied.
+        assertU(adoc("id", "warmup"));
+        assertU(commit());
     }
      
-    @Ignore("Metrics API changed in Solr 11 - needs to be updated to use OpenTelemetry instead of Dropwizard")
     @Test
     public void testThatCacheIsAvailableAndPrefilledNotUpdatedByQueryAndUpdatedByRewriter() throws Exception {
-        // TODO: Update this test to use Solr 11's OpenTelemetry-based metrics API
-        // The old Dropwizard/Codahale metrics API (registry(), Gauge, etc.) has been replaced
-        // For now, this test is disabled until the metrics access is updated
-         
+
         String q = "a b c";
         SolrQueryRequest req3 = req(
                  
