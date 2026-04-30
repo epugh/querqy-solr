@@ -11,7 +11,7 @@ import org.apache.solr.SolrTestCaseJ4;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.RemoteSolrException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
-import org.apache.solr.client.solrj.apache.HttpSolrClient;
+import org.apache.solr.client.solrj.jetty.HttpJettySolrClient;
 import org.apache.solr.client.solrj.request.CollectionAdminRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.cloud.SolrZkClient;
@@ -41,7 +41,7 @@ public class ZkStorageFormatTest extends AbstractQuerqySolrCloudTestCase {
     private static CloudSolrClient CLOUD_CLIENT;
 
     /** One client per node */
-    private static ArrayList<HttpSolrClient> CLIENTS = new ArrayList<>(5);
+    private static ArrayList<SolrClient> CLIENTS = new ArrayList<>(5);
 
     private static SolrZkClient ZK_CLIENT;
 
@@ -88,7 +88,7 @@ public class ZkStorageFormatTest extends AbstractQuerqySolrCloudTestCase {
         waitForRecoveriesToFinish(CLOUD_CLIENT);
 
         for (JettySolrRunner jetty : cluster.getJettySolrRunners()) {
-            CLIENTS.add(getHttpSolrClient(jetty.getBaseUrl() + "/" + COLLECTION + "/"));
+            CLIENTS.add(new HttpJettySolrClient.Builder(jetty.getBaseUrl() + "/" + COLLECTION + "/").build());
         }
 
     }
@@ -99,7 +99,7 @@ public class ZkStorageFormatTest extends AbstractQuerqySolrCloudTestCase {
             CLOUD_CLIENT.close();
             CLOUD_CLIENT = null;
         }
-        for (final HttpSolrClient client : CLIENTS) {
+        for (final SolrClient client : CLIENTS) {
             client.close();
         }
         CLIENTS.clear();

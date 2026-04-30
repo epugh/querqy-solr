@@ -2,14 +2,12 @@ package querqy.solr;
 
 import org.apache.solr.SolrTestCaseJ4;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.apache.HttpSolrClient;
 import org.apache.solr.client.solrj.request.json.JsonQueryRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.util.SolrJettyTestRule;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -18,13 +16,7 @@ import querqy.model.convert.builder.BooleanQueryBuilder;
 import querqy.model.convert.builder.ExpandedQueryBuilder;
 import querqy.rewrite.experimental.QueryRewritingHandler;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,68 +38,18 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
     @ClassRule
     public static final SolrJettyTestRule solrRule = new SolrJettyTestRule();
 
-    private static Path HOME;
-
     @BeforeClass
     public static void beforeTests() throws Exception {
-
-        HOME = createTempDir();
-        final File collDir = new File(HOME.toFile(), "collection1");
-        if (!collDir.mkdir()) {
-            throw new IOException("Could not create collection dir");
-        }
-        Files.copy(getFile("solr/solr.xml"), HOME.resolve("solr.xml"));
-        final File confDir = new File(collDir, "conf");
-        if (!confDir.mkdir()) {
-            throw new IOException("Could not create conf dir");
-        }
-
-        Files.copy(getFile("solr/collection1/conf/solrconfig-external-rewriting.xml"),
-                HOME.resolve("collection1").resolve("conf").resolve("solrconfig.xml")
-                );
-        Files.copy(getFile("solr/collection1/conf/schema.xml"),
-                HOME.resolve("collection1").resolve("conf").resolve("schema.xml")
-        );
-
-        Files.copy(getFile("solr/collection1/core.properties"),
-                HOME.resolve("collection1").resolve("core.properties")
-        );
-
-        solrRule.startSolr(HOME);
-
+        solrRule.startSolr();
+        solrRule.newCollection()
+                .withConfigSet(getFile("solr/collection1/conf").toString())
+                .withConfigFile("solrconfig-external-rewriting.xml")
+                .create();
         addDocs();
     }
 
-    @AfterClass
-    public static void cleanUp() throws IOException {
-        Files.walkFileTree(HOME, new FileVisitor<Path>() {
-            @Override
-            public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-                file.toFile().delete();
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFileFailed(final Path file, final IOException exc) throws IOException {
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) throws IOException {
-                dir.toFile().delete();
-                return FileVisitResult.CONTINUE;
-            }
-        });
-    }
-
     private static void addDocs() throws Exception {
-        final HttpSolrClient solrClient = getHttpSolrClient(solrRule.getBaseUrl().toString());
-        solrClient.add("collection1",
+        solrRule.getSolrClient().add("collection1",
                 Arrays.asList(new SolrInputDocument("id", "0", "f1", "tv", "f2", "television"),
                     new SolrInputDocument("id", "1", "f1", "tv"),
                     new SolrInputDocument("id", "2", "f1", "tv", "f2", "led"),
@@ -117,7 +59,7 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
 
                 )
         );
-        solrClient.commit("collection1");
+        solrRule.getSolrClient().commit("collection1");
 
     }
     @Test

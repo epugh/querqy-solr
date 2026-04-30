@@ -8,7 +8,7 @@ import org.apache.solr.SolrTestCaseJ4;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
-import org.apache.solr.client.solrj.apache.HttpSolrClient;
+import org.apache.solr.client.solrj.jetty.HttpJettySolrClient;
 import org.apache.solr.client.solrj.request.CollectionAdminRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.cloud.SolrZkClient;
@@ -37,7 +37,7 @@ public class ZkRewriterContainerFileSizeTest extends AbstractQuerqySolrCloudTest
     private static CloudSolrClient CLOUD_CLIENT;
 
     /** One client per node */
-    private static ArrayList<HttpSolrClient> CLIENTS = new ArrayList<>(5);
+    private static ArrayList<SolrClient> CLIENTS = new ArrayList<>(5);
 
     private static SolrZkClient ZK_CLIENT;
 
@@ -57,7 +57,7 @@ public class ZkRewriterContainerFileSizeTest extends AbstractQuerqySolrCloudTest
         waitForRecoveriesToFinish(CLOUD_CLIENT);
 
         for (JettySolrRunner jetty : cluster.getJettySolrRunners()) {
-            CLIENTS.add(getHttpSolrClient(jetty.getBaseUrl() + "/" + COLLECTION + "/"));
+            CLIENTS.add(new HttpJettySolrClient.Builder(jetty.getBaseUrl() + "/" + COLLECTION + "/").build());
         }
 
         ZK_CLIENT = zkClient();
@@ -70,7 +70,7 @@ public class ZkRewriterContainerFileSizeTest extends AbstractQuerqySolrCloudTest
             CLOUD_CLIENT.close();
             CLOUD_CLIENT = null;
         }
-        for (final HttpSolrClient client : CLIENTS) {
+        for (final SolrClient client : CLIENTS) {
             client.close();
         }
         CLIENTS.clear();
@@ -123,7 +123,7 @@ public class ZkRewriterContainerFileSizeTest extends AbstractQuerqySolrCloudTest
         assertNotNull(rsp);
         assertEquals(1L, rsp.getResults().getNumFound());
         final List<String> children = ZK_CLIENT.getChildren("/configs/fsize/" + IO_PATH + "/" + IO_DATA, (org.apache.zookeeper.Watcher) null)
-                .stream().filter(name -> name.contains("large_common_rules-")).collect(Collectors.toList());
+                .stream().filter(name -> name.contains("large_common_rules-")).toList();
         assertTrue(children.size() > 1);
         for (final String child : children) {
             final byte[] data = ZK_CLIENT.getData("/configs/fsize/" + IO_PATH + "/" + IO_DATA + "/" + child, null, null);
