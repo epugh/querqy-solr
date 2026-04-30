@@ -58,7 +58,7 @@ public class IndexRewriterContainerTest extends SolrTestCase {
 
     @BeforeClass
     public static void startServer() throws Exception {
-        System.setProperty("solr.disable.allowUrls", "true");
+        System.setProperty("solr.security.allow.urls.enabled", "false");
         leaderSolrHome = prepareSolrHomeWithConfigSets("leader");
         followerSolrHome = prepareSolrHomeWithConfigSets("follower");
         startSolrLeader(leaderSolrHome.toString(), Path.of(leaderSolrHome.toString(), "data").toString());
