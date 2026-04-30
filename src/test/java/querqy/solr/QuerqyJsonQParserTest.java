@@ -6,6 +6,8 @@ import org.apache.solr.client.solrj.request.json.JsonQueryRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.util.EnvUtils;
+import org.apache.solr.core.CoreContainer;
 import org.apache.solr.util.SolrJettyTestRule;
 import org.assertj.core.api.Assertions;
 import org.junit.BeforeClass;
@@ -17,6 +19,8 @@ import querqy.model.convert.builder.ExpandedQueryBuilder;
 import querqy.rewrite.experimental.QueryRewritingHandler;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +44,13 @@ public class QuerqyJsonQParserTest extends SolrTestCaseJ4 {
 
     @BeforeClass
     public static void beforeTests() throws Exception {
-        solrRule.startSolr();
+        EnvUtils.setProperty(CoreContainer.ALLOW_PATHS_SYSPROP,
+                getFile("solr").getParent().toAbsolutePath().toString());
+
+        Path home = createTempDir();
+        Files.copy(getFile("solr/solr.xml"), home.resolve("solr.xml"));
+        solrRule.startSolr(home);
+
         solrRule.newCollection()
                 .withConfigSet(getFile("solr/collection1/conf").toString())
                 .withConfigFile("solrconfig-external-rewriting.xml")
