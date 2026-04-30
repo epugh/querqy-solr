@@ -195,6 +195,11 @@ public abstract class RewriterConfigRequestBuilder {
         }
 
         @Override
+        public boolean requiresCollection() {
+            return true;
+        }
+
+        @Override
         public SolrParams getParams() {
             return GET.params();
         }
@@ -212,6 +217,11 @@ public abstract class RewriterConfigRequestBuilder {
 
         public ListRewriterConfigsSolrRequest(final String requestHandlerName) {
             super(SolrRequest.METHOD.GET, requestHandlerName, SolrRequest.SolrRequestType.UNSPECIFIED);
+        }
+
+        @Override
+        public boolean requiresCollection() {
+            return true;
         }
 
         @Override
