@@ -390,7 +390,7 @@ public class DismaxSearchEngineRequestAdapter implements LuceneSearchEngineReque
         }
 
         for (final BooleanClause clause : clauses) {
-            if ((clause.getQuery() instanceof BooleanQuery) && (clause.getOccur() != BooleanClause.Occur.MUST)) {
+            if ((clause.query() instanceof BooleanQuery) && (clause.occur() != BooleanClause.Occur.MUST)) {
                 return query; // seems to be a complex query with sub queries - do not
                 // apply mm
             }
