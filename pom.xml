@@ -247,6 +247,12 @@
                     <!-- Use narrow US-ASCII as default Java character set (via file.encoding system property)
                          to increase the chance of catching code that relies on the JDK default encoding -->
                     <argLine>-Dfile.encoding=US-ASCII</argLine>
+                    <systemPropertyVariables>
+                        <!--silence warnings when running tests -->
+                        <solr.configset.default.confdir>${project.basedir}/src/test/resources/solr/collection1/conf</solr.configset.default.confdir>
+                        <solr.logs.dir>${java.io.tmpdir}</solr.logs.dir>
+                        <java.security.egd>file:/dev/./urandom</java.security.egd>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
 
